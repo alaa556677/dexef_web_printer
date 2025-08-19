@@ -1,0 +1,10 @@
+{
+  "default": {
+    "port": 5123,
+    "bind": "127.0.0.1",
+    "sumatraPath": "./vendor/sumatra/Sumatra.exe",
+    "dataDir": "~/.webprint-agent",
+    "logMaxEntries": 200,
+    "corsAllow": "^https?://localhost(:\\d+)?$"
+  }
+}

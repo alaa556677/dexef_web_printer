@@ -1,0 +1,54 @@
+{
+  "name": "webprint-agent",
+  "version": "1.0.0",
+  "description": "Cross-platform Local Print Agent for silent PDF printing",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "postinstall": "npm run build",
+    "test-connection": "node scripts/test-connection.js",
+    "validate": "node scripts/validate-setup.js"
+  },
+  "keywords": [
+    "printing",
+    "pdf",
+    "local",
+    "agent",
+    "windows",
+    "macos",
+    "linux"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^3.3.11",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "helmet": "^7.1.0",
+    "multer": "^1.4.5-lts.1",
+    "node-windows": "^1.0.0-beta.8",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/config": "^3.3.3",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/fs-extra": "^11.0.4",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.19.11",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/uuid": "^9.0.7",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

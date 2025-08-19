@@ -1,0 +1,46 @@
+### Health Check
+GET http://localhost:5123/health
+
+### List Printers (requires API key)
+GET http://localhost:5123/printers
+X-API-Key: {{API_KEY}}
+
+### Get Default Printer (requires API key)
+GET http://localhost:5123/printers/default
+X-API-Key: {{API_KEY}}
+
+### Print PDF (requires API key)
+POST http://localhost:5123/print
+X-API-Key: {{API_KEY}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="printer"
+
+HP LaserJet Pro M404
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./samples/document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Print PDF to Default Printer (requires API key)
+POST http://localhost:5123/print
+X-API-Key: {{API_KEY}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./samples/document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Get Print Jobs History (requires API key)
+GET http://localhost:5123/jobs
+X-API-Key: {{API_KEY}}
+
+### Get Last 10 Print Jobs (requires API key)
+GET http://localhost:5123/jobs?limit=10
+X-API-Key: {{API_KEY}}
