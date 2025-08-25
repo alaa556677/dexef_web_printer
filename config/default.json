@@ -5,6 +5,6 @@
     "sumatraPath": "./vendor/sumatra/Sumatra.exe",
     "dataDir": "~/.webprint-agent",
     "logMaxEntries": 200,
-    "corsAllow": "^https?://localhost(:\\d+)?$"
+    "corsAllow": "^(https?://localhost(:\\d+)?|file://|null)$"
   }
 }

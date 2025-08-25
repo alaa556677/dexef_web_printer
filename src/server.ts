@@ -41,14 +41,23 @@ export async function startServer() {
   // CORS configuration
   app.use(cors({
     origin: (origin, cb) => {
+      // Allow file:// URLs and null origins for local development
+      if (!origin || origin.startsWith('file://') || origin === 'null') {
+        cb(null, true);
+        return;
+      }
+      
       const re = corsRegex();
-      if (!origin || re.test(origin)) {
+      if (re.test(origin)) {
         cb(null, true);
       } else {
+        console.log('CORS blocked for origin:', origin);
         cb(new Error('CORS blocked'));
       }
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'X-API-Key', 'Authorization']
   }));
 
   // Swagger UI - No auth required

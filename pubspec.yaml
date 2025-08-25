@@ -1,0 +1,27 @@
+name: webprint_agent
+description: A cross-platform local print agent that provides a REST API for silent PDF printing
+version: 1.0.0
+homepage: https://github.com/yourusername/webprint_agent
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.1.0
+  json_annotation: ^4.8.1
+  path: ^1.8.3
+  uuid: ^4.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  json_serializable: ^6.7.1
+  build_runner: ^2.4.7
+  mockito: ^5.4.4
+  test: ^1.24.0
+
+flutter:
+  # No Flutter-specific dependencies needed for this package
