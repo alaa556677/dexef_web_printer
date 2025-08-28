@@ -2,7 +2,7 @@
   "default": {
     "port": 5123,
     "bind": "127.0.0.1",
-    "sumatraPath": "./vendor/sumatra/Sumatra.exe",
+    "sumatraPath": "D:/alaa/projects/work/dexef_web_printer/vendor/sumatra/SumatraPDF.exe",
     "dataDir": "~/.webprint-agent",
     "logMaxEntries": 200,
     "corsAllow": "^(https?://localhost(:\\d+)?|file://|null)$"

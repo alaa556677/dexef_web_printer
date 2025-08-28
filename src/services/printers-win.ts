@@ -15,7 +15,7 @@ export async function listPrintersWin(): Promise<PrinterInfo[]> {
     const powershell = spawn('powershell', [
       '-NoProfile',
       '-Command',
-      `Get-Printer | Select-Object -ExpandProperty Name`
+      `Get-Printer | Select-Object Name, PortName, DriverName, Location, Comment | ConvertTo-Json`
     ], {
       windowsHide: true
     });
@@ -37,13 +37,13 @@ export async function listPrintersWin(): Promise<PrinterInfo[]> {
           const printers = JSON.parse(output.trim());
           const result = Array.isArray(printers) ? printers : [printers];
           resolve(result.map(printer => ({
-            name: printer.name || '',
-            portName: printer.portName || undefined,
+            name: printer.Name || printer.name || '',
+            portName: printer.PortName || printer.portName || undefined,
             ipAddress: printer.ipAddress || undefined,
             macAddress: printer.macAddress || undefined,
-            driverName: printer.driverName || undefined,
-            location: printer.location || undefined,
-            comment: printer.comment || undefined
+            driverName: printer.DriverName || printer.driverName || undefined,
+            location: printer.Location || printer.location || undefined,
+            comment: printer.Comment || printer.comment || undefined
           })));
         } catch (parseError) {
           // Fallback to simple name list if JSON parsing fails
@@ -119,13 +119,13 @@ export async function defaultPrinterWin(): Promise<PrinterInfo | null> {
           const printer = JSON.parse(output.trim());
           if (printer && printer.name) {
             resolve({
-              name: printer.name || '',
-              portName: printer.portName || undefined,
+              name: printer.Name || printer.name || '',
+              portName: printer.PortName || printer.portName || undefined,
               ipAddress: printer.ipAddress || undefined,
               macAddress: printer.macAddress || undefined,
-              driverName: printer.driverName || undefined,
-              location: printer.location || undefined,
-              comment: printer.comment || undefined
+              driverName: printer.DriverName || printer.driverName || undefined,
+              location: printer.Location || printer.location || undefined,
+              comment: printer.Comment || printer.comment || undefined
             });
           } else {
             resolve(null);

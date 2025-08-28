@@ -74,6 +74,37 @@
         .status-connected { color: #27ae60; }
         .status-failed { color: #e74c3c; }
         .status-testing { color: #f39c12; }
+        
+        /* Print form styles */
+        #printForm {
+            transition: all 0.3s ease;
+        }
+        
+        #printForm label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        #printForm select,
+        #printForm input[type="file"] {
+            transition: border-color 0.3s ease;
+        }
+        
+        #printForm select:focus,
+        #printForm input[type="file"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -99,7 +130,23 @@
             <button id="testConnectionBtn" class="button btn-primary">Test Connection</button>
             <button id="checkHealthBtn" class="button btn-success">Check Health</button>
             <button id="listPrintersBtn" class="button btn-warning">List Printers</button>
-            <button id="printPdfBtn" class="button btn-info" style="background: #9b59b6;">Print PDF</button>
+            <div style="margin-top: 10px;">
+                <button id="printPdfBtn" class="button btn-info" style="background: #9b59b6;">Print PDF</button>
+            </div>
+            <div id="printForm" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                <h4 style="margin-top: 0; color: #495057;">📄 Print PDF Form</h4>
+                <div style="margin-bottom: 15px;">
+                    <input for="printerSelect" style="display: block; margin-bottom: 5px; font-weight: bold; color: #495057;"/>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="pdfFileInput" style="display: block; margin-bottom: 5px; font-weight: bold; color: #495057;">Select PDF File:</label>
+                    <input type="file" id="pdfFileInput" accept=".pdf" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;" />
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="submitPrintBtn" class="button btn-success" style="flex: 1;">Submit Print Job</button>
+                    <button id="cancelPrintBtn" class="button btn-secondary" style="flex: 1; background: #6c757d;">Cancel</button>
+                </div>
+            </div>
         </div>
         </div>
 
@@ -228,7 +275,15 @@
         });
 
         document.getElementById('printPdfBtn').addEventListener('click', () => {
-            printPdf();
+            togglePrintForm();
+        });
+
+        document.getElementById('submitPrintBtn').addEventListener('click', () => {
+            submitPrintJob();
+        });
+
+        document.getElementById('cancelPrintBtn').addEventListener('click', () => {
+            togglePrintForm();
         });
 
         // Test connection to the WebPrint Agent
@@ -300,7 +355,95 @@ Memory Usage:
             }
         }
 
-        // Print PDF
+        // Toggle print form visibility
+        function togglePrintForm() {
+            const form = document.getElementById('printForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                loadPrintersForForm();
+            } else {
+                form.style.display = 'none';
+            }
+        }
+
+        // Load printers into the form dropdown
+        async function loadPrintersForForm() {
+            const printerSelect = document.getElementById('printerSelect');
+            printerSelect.innerHTML = '<option value="">Loading printers...</option>';
+            
+            try {
+                const printers = await client.listPrinters();
+                printerSelect.innerHTML = '<option value="">Select a printer...</option>';
+                
+                printers.forEach(printer => {
+                    const option = document.createElement('option');
+                    option.value = printer.name;
+                    option.textContent = printer.name;
+                    printerSelect.appendChild(option);
+                });
+            } catch (e) {
+                printerSelect.innerHTML = '<option value="">Failed to load printers</option>';
+                console.error('Failed to load printers:', e);
+            }
+        }
+
+        // Submit print job with selected printer and file
+        async function submitPrintJob() {
+            const printerSelect = document.getElementById('printerSelect');
+            const pdfFileInput = document.getElementById('pdfFileInput');
+            
+            const selectedPrinter = printerSelect.value;
+            const selectedFile = pdfFileInput.files[0];
+            
+            if (!selectedPrinter) {
+                alert('Please select a printer');
+                return;
+            }
+            
+            if (!selectedFile) {
+                alert('Please select a PDF file');
+                return;
+            }
+            
+            if (!selectedFile.type.includes('pdf')) {
+                alert('Please select a valid PDF file');
+                return;
+            }
+            
+            updateResults('Submitting print job...\n');
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('printer', selectedPrinter);
+                
+                const response = await fetch(`${client.baseUrl}/print`, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Key': client.apiKey
+                    },
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`);
+                }
+                
+                const result = await response.json();
+                updateResults(`✅ Print job submitted successfully!\n\nJob ID: ${result.jobId || 'N/A'}\nPrinter: ${result.printer || selectedPrinter}\nFilename: ${result.filename || selectedFile.name}\nStatus: ${result.status || 'queued'}\n`);
+                
+                // Reset form
+                pdfFileInput.value = '';
+                printerSelect.value = '';
+                togglePrintForm();
+                
+            } catch (e) {
+                updateResults('❌ Failed to submit print job: ' + e + '\n');
+            }
+        }
+
+        // Print PDF (legacy function - kept for compatibility)
         async function printPdf() {
             updateResults('Printing PDF...\n');
             
